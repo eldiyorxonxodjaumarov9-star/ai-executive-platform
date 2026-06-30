@@ -17,6 +17,14 @@ VALID_AGENTS = frozenset(
 VALID_APP_ENVS = frozenset({"development", "staging", "production"})
 
 
+def _strip_env_comment_suffix(text: str) -> str:
+    """Remove accidental documentation text copied into env values."""
+    cleaned = text.strip()
+    if " (" in cleaned:
+        cleaned = cleaned.split(" (", 1)[0].strip()
+    return cleaned
+
+
 def parse_bool_env(value: Any, *, default: bool = False) -> bool:
     """Parse boolean environment values from Render, .env, or shell."""
     if value is None:
@@ -26,7 +34,7 @@ def parse_bool_env(value: Any, *, default: bool = False) -> bool:
     if isinstance(value, int):
         return value != 0
 
-    text = str(value).strip().lower()
+    text = _strip_env_comment_suffix(str(value)).lower()
     if text in {"", "none", "null"}:
         return default
     if text in {"true", "1", "yes", "on"}:
@@ -42,7 +50,7 @@ def parse_app_env(value: Any) -> Literal["development", "staging", "production"]
     if value is None or str(value).strip() == "":
         return "production"
 
-    normalized = str(value).strip().lower()
+    normalized = _strip_env_comment_suffix(str(value)).lower()
     if normalized not in VALID_APP_ENVS:
         raise ValueError(
             f"APP_ENV must be one of: {', '.join(sorted(VALID_APP_ENVS))}"

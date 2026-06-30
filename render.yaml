@@ -13,9 +13,9 @@ services:
       - key: APP_ENV
         value: production
       - key: DEBUG
-        value: "false"
+        value: false
       - key: DAILY_REPORT_ENABLED
-        value: "false"
+        value: false
       - key: BITRIX24_WEBHOOK_URL
         sync: false
       - key: ANTHROPIC_API_KEY
